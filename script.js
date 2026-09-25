@@ -1,32 +1,32 @@
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
-document.getElementById('year').textContent = new Date().getFullYear();
+$('#year').textContent = new Date().getFullYear();
 
 const navToggle = $('.nav-toggle');
-const nav = $('.nav');
+const nav = $('.nav-links');
 navToggle?.addEventListener('click', () => {
-  const isOpen = nav.classList.toggle('is-open');
-  navToggle.setAttribute('aria-expanded', String(isOpen));
+  const open = nav.classList.toggle('is-open');
+  navToggle.setAttribute('aria-expanded', String(open));
 });
-$$('.nav a').forEach(a => a.addEventListener('click', () => {
+$$('.nav-links a').forEach(a => a.addEventListener('click', () => {
   nav.classList.remove('is-open');
   navToggle?.setAttribute('aria-expanded', 'false');
 }));
 
-const revealObserver = new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('is-visible');
-      revealObserver.unobserve(entry.target);
+      observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.12 });
-$$('.reveal').forEach(el => revealObserver.observe(el));
+}, { threshold: 0.10 });
+$$('.reveal').forEach(el => observer.observe(el));
 
 const glow = $('.cursor-glow');
 if (glow && matchMedia('(pointer:fine)').matches) {
-  window.addEventListener('pointermove', (e) => {
+  addEventListener('pointermove', e => {
     glow.style.left = `${e.clientX}px`;
     glow.style.top = `${e.clientY}px`;
   }, { passive: true });
@@ -39,8 +39,7 @@ const closeLightbox = () => {
   document.body.style.overflow = '';
 };
 $$('.js-lightbox-trigger').forEach(el => {
-  el.addEventListener('click', (event) => {
-    if (event.target.closest('.expand-btn')) event.preventDefault();
+  el.addEventListener('click', () => {
     lightboxImg.src = el.dataset.img;
     lightboxImg.alt = el.dataset.alt || 'Dashboard preview';
     lightbox.hidden = false;
@@ -48,5 +47,5 @@ $$('.js-lightbox-trigger').forEach(el => {
   });
 });
 $('.lightbox-close')?.addEventListener('click', closeLightbox);
-lightbox?.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
-window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lightbox.hidden) closeLightbox(); });
+lightbox?.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !lightbox.hidden) closeLightbox(); });
